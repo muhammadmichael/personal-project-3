@@ -1,0 +1,7 @@
+type Berita{
+    title: String
+    highlight: String
+    content: Text
+    image: String
+    isDelete: Boolean
+}
