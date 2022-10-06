@@ -1,6 +1,7 @@
 scalar Upload
 
 type Berita {
+    id: Int
     title: String
     highlight: String
     content: String
@@ -9,6 +10,7 @@ type Berita {
 }
 
 type Komentar {
+    id: Int
     text: String
 }
 
@@ -18,8 +20,8 @@ type Query {
 }
 
 type Mutation {
-    createBerita(#title: String, highlight: String, content: String, 
-    image: Upload): Berita
+    createBerita(title: String, highlight: String, content: String, image: Upload!): Berita
+    updateBerita(id: Int, title: String, highlight: String, content: String, image: Upload!): Berita
     getBerita(id: Int): Berita
     deleteBerita(id: Int): Berita
     createKomentar(id: Int, text: String): Komentar

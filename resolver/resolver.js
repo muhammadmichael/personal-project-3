@@ -27,21 +27,50 @@ module.exports = {
         }
     },
     Mutation: {
-        createBerita: async(_, { title, highlight, content, image }) => {
-                const imageUrl = await upload(image)
-                console.log(imageUrl + " bener dari sini");
+        createBerita: async (_, { title, highlight, content, image }) => {
+            // Middleware upload
+            const imageUrl = await upload(image)
+
+            try {
                 var berita = {
                     title: title,
                     highlight: highlight,
                     content: content,
                     image: imageUrl
                 }
-    
+
                 return Berita.create(berita)
-                    .then((data) => {
+                    .then(() => {
                         return data;
                     });
+            } catch (error) {
+                return {};
+            }
+        },
+        updateBerita: async (_, { id, title, highlight, content, image }) => {
+            // Middleware upload
+            const imageUrl = await upload(image)
+            try {
+                // Middleware upload
+                const imageUrl = await upload(image)
 
+                var berita = {
+                    title: title,
+                    highlight: highlight,
+                    content: content,
+                    image: imageUrl
+                }
+
+                Berita.update(berita, {
+                    where: { id: id }
+                })
+                    .then(() => {
+                        return Berita.findByPk(id);
+                    });
+
+            } catch (error) {
+                return {};
+            }
         },
         getBerita: (parent, { id }) => {
             // Get Berita By Id
@@ -76,12 +105,12 @@ module.exports = {
                     text: text,
                     beritumId: id
                 }
-        
+
                 return Komentar.create(komentar)
                     .then(() => {
                         return komentar;
                     });
-        
+
             } catch (error) {
                 return {};
             }
