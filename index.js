@@ -1,6 +1,8 @@
 const { ApolloServer, gql } = require('apollo-server');
-
+const express = require('express');
+const  GraphQLUpload  =require('apollo-server');
 const db = require("./models")
+
 db.sequelize.sync()
     .then(() => {
         console.log("sync db");
@@ -14,6 +16,8 @@ const Komentar = db.komentars;
 const Op = db.Sequelize.Op;
 
 const resolvers = {
+    Upload: GraphQLUpload,
+
     Query: {
         beritas: () => {
             return Berita.findAll() //async
@@ -35,6 +39,29 @@ const resolvers = {
         }
     },
     Mutation: {
+        createBerita: async(parent, { title, highlight, content, image }) => {
+            try {
+                //const readFileFromPublic = req.file.path;
+                // const { createReadStream, filename, mimetype } = await image
+                // const location = path.join(__dirname,`/public/images/uploadedimages/${filename}`)
+                // const myfile = createReadStream()
+                // await myfile.pipe(fs.createWriteStream(location))
+                var berita = {
+                    title: title,
+                    highlight: highlight,
+                    content: content,
+                    // image: `http://localhost:4000/images/${filename}`,
+                }
+    
+                return Berita.create(berita)
+                    .then((data) => {
+                        return data;
+                    });
+    
+            } catch (error) {
+                return {};
+            }
+        },
         getBerita: (parent, { id }) => {
             // Get Berita By Id
             return Berita.findByPk(id) //async
@@ -113,7 +140,7 @@ const typeDefs = fs.readFileSync("./schema.graphql", "utf-8").toString();
 const server = new ApolloServer({
     typeDefs,
     resolvers,
-    csrfPrevention: true,
+    csrfPrevention: false,
     cache: 'bounded',
     /**
      * What's up with this embed: true option?
