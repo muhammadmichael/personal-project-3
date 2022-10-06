@@ -1,25 +1,15 @@
-// Source: https://www.bezkoder.com/node-js-upload-image-mysql/
+// Source: https://github.com/siamahnaf198/graphql-upload
 
-// const multer = require("multer");
-
-// const imageFilter = (req, file, cb) => {
-//   if (file.mimetype.startsWith("image")) {
-//     cb(null, true);
-//   } else {
-//     cb("Please upload only images.", false);
-//   }
-// };
-
-// var storage = multer.diskStorage({
-//   destination: (req, file, cb) => {
-//     cb(null, "./public/images/uploadedimages/");
-//   },
-//   filename: (req, file, cb) => {
-//     cb(null, file.originalname);
-//   },
-// });
-
-// var upload = multer({ storage: storage, fileFilter: imageFilter });
-
-const { GraphQLUpload }= require('graphql-upload')
-module.exports = GraphQLUpload;
+module.exports.upload= async (file) => {
+    const {createReadStream, filename} = await file;
+    const stream = createReadStream();
+    var {ext, name} = parse(filename);
+    name = `single${Math.floor((Math.random() * 10000) + 1)}`;
+    let url = join(__dirname, `../Upload/${name}-${Date.now()}${ext}`);
+    const imageStream = await createWriteStream(url)
+    await stream.pipe(imageStream);
+    const baseUrl = process.env.BASE_URL
+    const port = process.env.PORT
+    url = `${baseUrl}${port}${url.split('Upload')[1]}`;
+    return url;
+}

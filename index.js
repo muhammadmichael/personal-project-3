@@ -1,7 +1,18 @@
-const { ApolloServer, gql } = require('apollo-server');
-const express = require('express');
-const  GraphQLUpload  =require('apollo-server');
+const {graphqlUploadExpress} = require("graphql-upload");
+const app = require("./app");
+const apolloServer = require("./apollo");
 const db = require("./models")
+
+async function startServer() {
+    app.use(graphqlUploadExpress());
+    await apolloServer.start();
+    apolloServer.applyMiddleware({app});
+    app.use('/', (req, res) => {
+        res.send("Welcome to Graphql Upload!")
+    })
+};
+
+startServer();
 
 db.sequelize.sync()
     .then(() => {
@@ -11,150 +22,9 @@ db.sequelize.sync()
         console.log("error: " + err.message);
     });
 
-const Berita = db.beritas;
-const Komentar = db.komentars;
-const Op = db.Sequelize.Op;
+const port = process.env.PORT || 4000
 
-const resolvers = {
-    Upload: GraphQLUpload,
-
-    Query: {
-        beritas: () => {
-            return Berita.findAll() //async
-                .then(data => {
-                    return data;
-                })
-                .catch(err => {
-                    return err;
-                });
-        },
-        komentars: () => {
-            return Komentar.findAll()
-                .then(data => {
-                    return data;
-                })
-                .catch(err => {
-                    return err;
-                });
-        }
-    },
-    Mutation: {
-        createBerita: async(parent, { title, highlight, content, image }) => {
-            try {
-                //const readFileFromPublic = req.file.path;
-                // const { createReadStream, filename, mimetype } = await image
-                // const location = path.join(__dirname,`/public/images/uploadedimages/${filename}`)
-                // const myfile = createReadStream()
-                // await myfile.pipe(fs.createWriteStream(location))
-                var berita = {
-                    title: title,
-                    highlight: highlight,
-                    content: content,
-                    // image: `http://localhost:4000/images/${filename}`,
-                }
-    
-                return Berita.create(berita)
-                    .then((data) => {
-                        return data;
-                    });
-    
-            } catch (error) {
-                return {};
-            }
-        },
-        getBerita: (parent, { id }) => {
-            // Get Berita By Id
-            return Berita.findByPk(id) //async
-                .then(berita => {
-                    return berita;
-                })
-                .catch(err => {
-                    return {};
-                });
-        },
-        deleteBerita: (parent, { id }) => {
-            // Soft Delete
-            try {
-                var berita = {
-                    isDelete: true,
-                }
-
-                return Berita.update(berita, {
-                    where: { id: id }
-                })
-                    .then(() => {
-                        return Berita.findByPk(id)
-                    });
-            } catch (error) {
-                return {}
-            }
-        }, createKomentar: (parent, { id, text }) => {
-            // Params id disini adalah id berita yang memiliki komentar tersebut
-            try {
-                var komentar = {
-                    text: text,
-                    beritumId: id
-                }
-        
-                return Komentar.create(komentar)
-                    .then(() => {
-                        return komentar;
-                    });
-        
-            } catch (error) {
-                return {};
-            }
-        }, replyKomentar: (parent, { id, text }) => {
-            // Params id disini adalah idParent komentar tersebut
-            try {
-                var komentar = {
-                    text: text,
-                    komentarId: id // foreign key ke parent
-                }
-
-                return Komentar.create(komentar)
-                    .then(() => {
-                        return komentar
-                    });
-
-            } catch (error) {
-                return {};
-            }
-        },
-    },
-
-};
-
-const {
-    ApolloServerPluginLandingPageLocalDefault
-} = require('apollo-server-core');
-
-// The ApolloServer constructor requires two parameters: your schema
-// definition and your set of resolvers.
-
-const fs = require('fs');
-const path = require('path');
-const komentar = require('./models/komentar');
-const typeDefs = fs.readFileSync("./schema.graphql", "utf-8").toString();
-
-const server = new ApolloServer({
-    typeDefs,
-    resolvers,
-    csrfPrevention: false,
-    cache: 'bounded',
-    /**
-     * What's up with this embed: true option?
-     * These are our recommended settings for using AS;
-     * they aren't the defaults in AS3 for backwards-compatibility reasons but
-     * will be the defaults in AS4. For production environments, use
-     * ApolloServerPluginLandingPageProductionDefault instead.
-    **/
-    plugins: [
-        ApolloServerPluginLandingPageLocalDefault({ embed: true }),
-    ],
-});
-
-// The `listen` method launches a web server.
-server.listen().then(({ url }) => {
-    console.log(`🚀  Server ready at ${url}`);
-});  
+app.listen(port, () => {
+    console.log(`App is running on port ${port}`);
+    console.log(`Graphql EndPoint Path: ${apolloServer.graphqlPath}`);
+})
