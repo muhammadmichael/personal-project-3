@@ -27,24 +27,21 @@ module.exports = {
         }
     },
     Mutation: {
-        createBerita: async(parent, { title, highlight, content, image }) => {
-            try {
-                // const imageUrl = await upload(image)
+        createBerita: async(_, { title, highlight, content, image }) => {
+                const imageUrl = await upload(image)
+                console.log(imageUrl + " bener dari sini");
                 var berita = {
                     title: title,
                     highlight: highlight,
                     content: content,
-                    // image: imageUrl
+                    image: imageUrl
                 }
     
                 return Berita.create(berita)
                     .then((data) => {
                         return data;
                     });
-    
-            } catch (error) {
-                return {};
-            }
+
         },
         getBerita: (parent, { id }) => {
             // Get Berita By Id
