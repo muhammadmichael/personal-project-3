@@ -1,7 +1,23 @@
-type Berita{
+type Berita {
     title: String
     highlight: String
-    content: Text
+    content: String
     image: String
     isDelete: Boolean
+}
+
+type Komentar {
+    text: String
+}
+
+type Query {
+    beritas: [Berita]
+    komentars: [Komentar]
+}
+
+type Mutation {
+    getBerita(id: Int): Berita
+    deleteBerita(id: Int): Berita
+    createKomentar(id: Int, text: String): Komentar
+    replyKomentar(id: Int, text: String): Komentar
 }
