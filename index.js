@@ -8,7 +8,7 @@ async function startServer() {
     await apolloServer.start();
     apolloServer.applyMiddleware({app});
     app.use('/', (req, res) => {
-        res.send("Welcome to Graphql Upload!")
+        res.send("To access apollo server, go to localhost:4000/graphql!")
     })
 };
 

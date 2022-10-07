@@ -12,7 +12,9 @@ const Op = db.Sequelize.Op;
 module.exports = {
     Query: {
         beritas: () => {
-            return Berita.findAll() //async
+            return Berita.findAll(
+                {where: { isDelete: false }}
+            ) //async
                 .then(data => {
                     return data;
                 })
