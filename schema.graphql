@@ -1,0 +1,45 @@
+scalar Upload
+
+type Berita {
+    id: Int
+    title: String
+    highlight: String
+    content: String
+    image: String
+    isDelete: Boolean
+}
+
+type Komentar {
+    id: Int
+    text: String
+}
+
+type User {
+	id: Int
+	name: String
+	username: String
+	email: String
+}
+
+type Token {
+	token: String
+	expired: String	
+}
+
+type Query {
+    beritas: [Berita]
+    komentars: [Komentar]
+    users: [User]
+}
+
+type Mutation {
+    createBerita(title: String, highlight: String, content: String, image: Upload!): Berita
+    updateBerita(id: Int, title: String, highlight: String, content: String, image: Upload!): Berita
+    getBerita(id: Int): Berita
+    deleteBerita(id: Int): Berita
+    createKomentar(id: Int, text: String): Komentar
+    replyKomentar(id: Int, text: String): Komentar
+
+    register(name: String, email:String,username: String, password: String): User,
+	login(username: String, password: String): Token
+}
