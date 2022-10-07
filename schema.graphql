@@ -14,9 +14,22 @@ type Komentar {
     text: String
 }
 
+type User {
+	id: Int
+	name: String
+	username: String
+	email: String
+}
+
+type Token {
+	token: String
+	expired: String	
+}
+
 type Query {
     beritas: [Berita]
     komentars: [Komentar]
+    users: [User]
 }
 
 type Mutation {
@@ -26,4 +39,7 @@ type Mutation {
     deleteBerita(id: Int): Berita
     createKomentar(id: Int, text: String): Komentar
     replyKomentar(id: Int, text: String): Komentar
+
+    register(name: String, email:String,username: String, password: String): User,
+	login(username: String, password: String): Token
 }
